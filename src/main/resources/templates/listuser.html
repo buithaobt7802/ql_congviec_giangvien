@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+	<meta charset="UTF-8">
+	<title>Quản lý tài khoản</title>
+	<link
+	href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css"
+	rel="stylesheet"
+	integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC"
+	crossorigin="anonymous">
+	
+	<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css" />
+	<link rel="stylesheet" type="text/css"
+	href="https://cdn.datatables.net/v/dt/dt-1.12.1/rg-1.2.0/datatables.min.css" />
+<link rel="stylesheet" type="text/css"
+	href="https://cdn.datatables.net/searchpanes/2.0.1/css/searchPanes.dataTables.min.css" />
+<link rel="stylesheet" type="text/css"
+	href="https://cdn.datatables.net/select/1.4.0/css/select.dataTables.min.css" />
+<link rel="stylesheet" type="text/css"
+	href="https://cdn.datatables.net/responsive/2.3.0/css/responsive.dataTables.min.css" />
+<link rel="stylesheet" type="text/css"
+	href="https://cdn.datatables.net/buttons/2.2.3/css/buttons.dataTables.min.css" />
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+
+</head>
+
+
+<body>
+	<nav class="navbar navbar-expand-md bg-dark navbar-dark">
+	    <div class="collapse navbar-collapse" id="collapsibleNavbar">
+	        <ul class="navbar-nav mr-auto">
+	            <li class="nav-item">
+					<a class="nav-link" href="/">Danh sách vật tư</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link" th:href="@{/user}">Danh sách tài khoản</a>
+				</li>
+	        </ul>
+	        
+	        <ul class="navbar-nav ml-auto">
+	            <li class="nav-item navbar-brand ml-4" >
+					Xin chào,
+	            	<span sec:authentication="principal.username"></span>
+	            </li>
+	            <li class="nav-item pl-4" sec:authorize="isAuthenticated()">
+	            	<a class="navbar-brand" th:href="@{/logout}">Đăng xuất</a>
+	            </li>
+	        </ul>
+	    </div>
+	</nav>
+	<div class="container">
+		<div class="row mt-2">
+			<h1>Danh sách tài khoản</h1>
+		</div>
+		
+		<table id="myTable" class="table table-striped table-bordered " style="padding-top: 10px">
+			<thead class="table-dark">
+				<tr>
+					<th>ID</th>
+					<th>Họ</th>
+					<th>Tên</th>
+					<th>Email</th>
+					<th>Hành động</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr th:each="produce: ${listUser}" th:data-id="@{{id}(id=${produce.id})}">
+					<td style="width:30px;text-align:center" th:text="${produce.id}"></td>
+					<td th:text="${produce.firstName}"></td>
+					<td th:text="${produce.lastName}"></td>
+					<td th:text="${produce.email}"></td>
+					<td style="width:200px">
+						<a style="display:none" th:href="@{/user/edit/{id}(id=${produce.id})}" class="btn btn-primary">Update</a>
+						<button style="margin-left:8px" th:data-id="@{{id}(id=${produce.id})}" data-bs-toggle="modal" data-bs-target="#exampleModalUpdate" class="btn btn-primary">Update</button>
+						<button style="margin-left:10px" th:data-id="@{{id}(id=${produce.id})}" data-bs-toggle="modal" data-bs-target="#exampleModalDelete" class="btn btn-danger">Delete</button>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+</body>
+
+
+<div class="modal fade" id="exampleModalDelete" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title" id="exampleModalLabel">Xoá tài khoản</h5>
+				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+			</div>
+			<div class="modal-body">
+				<p style="font-size: 18px;">Bạn có muốn xoá tài khoản này hay không?</p>
+				<div id="body-category" style="margin: auto;">
+					<img id="ImgCategory" width="100%" style="margin: auto; max-width: 400px;" src="" alt="">
+				<h3 id="H3Category" style="margin: auto; margin-top: 10px;"></h3>
+			</div>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-danger btn-delete">Delete</button>
+				<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="modal fade" id="exampleModalUpdate" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title" id="exampleModalLabel">Cập nhật tài khoản</h5>
+				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+			</div>
+			<div class="modal-body">
+				<form method="POST">
+						<div class="form-group">
+							<label style="margin-top:8px">Họ</label>
+							<input id="update-firstName" style="margin-top:4px" type="text" name="firstName"class="form-control"
+								placeholder="Họ" />
+						</div>
+						<div class="form-group">
+							<label style="margin-top:8px">Tên</label>
+							<input id="update-lastName" style="margin-top:4px" type="text" name="lastName" class="form-control" placeholder="Tên" />
+						</div>
+						<div class="form-group">
+							<label style="margin-top:8px">Email</label>
+							<input id="update-email" style="margin-top:4px" type="text" name="email" class="form-control"
+								placeholder="Email" />
+						</div>
+						
+				</form>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-update btn-primary">Update</button>
+				<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+
+<div class="modal fade" id="exampleModalSearch" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title" id="exampleModalLabel">Search produce</h5>
+				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+			</div>
+			<form method="POST" action="/api/search">
+				<div class="modal-body">
+							<div class="form-group">
+							<label style="margin-top:8px">Họ</label>
+							<input id="search-firstName" style="margin-top:4px" type="text" name="Tenvattu"class="form-control"
+								placeholder="Họ" />
+						</div>
+						<div class="form-group">
+							<label style="margin-top:8px">Tên</label>
+							<input id="search-lastName" style="margin-top:4px" type="text" name="Loaivattu" 
+							class="form-control" placeholder="Tên" />
+						</div>
+						<div class="form-group">
+							<label style="margin-top:8px">Email</label>
+							<input id="search-email" style="margin-top:4px" type="text" name="email" 
+							class="form-control"
+								placeholder="Email" />
+						</div>
+				</div>
+				<div class="modal-footer">
+					<button type="submit" class="btn btn-primary">Search</button>
+					<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+				</div>
+			</form>
+		</div>
+	</div>
+</div>
+
+
+<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
+
+<script
+		src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+<script type="text/javascript"
+		src="https://cdn.datatables.net/v/dt/dt-1.12.1/rg-1.2.0/datatables.min.js"></script>
+<script type="text/javascript"
+		src="https://cdn.datatables.net/searchpanes/2.0.1/js/dataTables.searchPanes.min.js"></script>
+<script type="text/javascript"
+		src="https://cdn.datatables.net/select/1.4.0/js/dataTables.select.min.js"></script>
+<script type="text/javascript"
+		src="https://cdn.datatables.net/responsive/2.3.0/js/dataTables.responsive.min.js"></script>
+
+<script
+		src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+		integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+		crossorigin="anonymous"></script>
+<script type="text/javascript"
+		src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+<script>
+
+	window.addEventListener('load', (event) => {
+		let table = $('#myTable').DataTable({
+	        select: false,
+	        pageLength: 5,
+	        stateSave: true,
+	        lengthMenu: [5, 10, 15, 20],
+	        columnDefs: [
+	            {
+	                searchPanes: {
+	                    show: true
+	                },
+	                targets: [1, 2, 3]
+	            }
+	        ],
+	        "language": {
+	            "sEmptyTable": "Không có dữ liệu trong bảng",
+	            "sInfo": "Đang hiển thị từ _START_ đến _END_ trong tổng số _TOTAL_ kết quả",
+	            "sInfoEmpty": "Hiển thị từ 0 đến 0 trong tổng số 0 kết quả",
+	            "sInfoFiltered": "(được lọc từ tổng số _MAX_ kết quả)",
+	            "sInfoPostFix": "",
+	            "sInfoThousands": ",",
+	            "sLengthMenu": "Hiển thị _MENU_ kết quả",
+	            "sLoadingRecords": "Đang tải...",
+	            "sProcessing": "Đang xử lý...",
+	            "searchPlaceholder": "Nhập từ khoá",
+	            "sSearch": "Tìm kiếm:",
+	            "sZeroRecords": "Không tìm thấy kết quả phù hợp",
+	            "oPaginate": {
+	                "sFirst": "Đầu",
+	                "sLast": "Cuối",
+	                "sNext": "Tiếp",
+	                "sPrevious": "Trước"
+	            },
+	            "oAria": {
+	                "sSortAscending": ": sắp xếp cột tăng dần",
+	                "sSortDescending": ": sắp xếp cột giảm dần"
+	            },
+	        }
+	    });
+		new $.fn.dataTable.SearchPanes(table, {});
+	      table.searchPanes.container().prependTo(table.table().container());
+	      table.searchPanes.resizePanes();
+	      try {
+		    	$(".dtsp-collapseAll").text("Thu gọn tất cả");
+		    	$(".dtsp-showAll").text("Hiển thị tất cả");
+		    	$(".dtsp-clearAll ").text("Xoá bộ lọc");
+	        $(".dtsp-collapseAll")[0].click();
+	      } catch (error) { }
+	});
+	
+	</script>
+		
+<script>
+	let deleteId
+    $("#exampleModalDelete").on('show.bs.modal', function (event) {
+        const button = $(event.relatedTarget) 
+        deleteId = button.data("id")
+
+    })
+    $(".btn-delete").click(e => {
+        e.preventDefault();
+        $.ajax({
+                url:`api/deletevattu/${deleteId}` ,
+                type: "DELETE",
+                success: (response) => {
+                    Toastify({
+                        text: "Xoá vật tư thành công",
+                        duration: 2000,
+                        newWindow: true,
+                        //close: true,
+                        offset: {
+                            x: 50, // horizontal axis - can be a number or a string indicating unity. eg: '2em'
+                            y: 10 // vertical axis - can be a number or a string indicating unity. eg: '2em'
+                        },
+                        gravity: "top", // `top` or `bottom`
+                        position: "right", // `left`, `center` or `right`
+                        stopOnFocus: true, // Prevents dismissing of toast on hover
+                        style: {
+                            background: "linear-gradient(to right, green, green)",
+                            width: "250px",
+                            fontSize: "16px"
+                        },
+                    }).showToast();
+                    setTimeout(() => {
+                        $("#exampleModalDelete").modal("hide");
+                        location.reload();
+                    }, "2000")
+                },
+                error: (data) => {
+                    Toastify({
+                        text: "Lỗi server",
+                        duration: 2000,
+                        newWindow: true,
+                        //close: true,
+                        offset: {
+                            x: 50, // horizontal axis - can be a number or a string indicating unity. eg: '2em'
+                            y: 10 // vertical axis - can be a number or a string indicating unity. eg: '2em'
+                        },
+                        gravity: "top", // `top` or `bottom`
+                        position: "right", // `left`, `center` or `right`
+                        stopOnFocus: true, // Prevents dismissing of toast on hover
+                        style: {
+                            background: "linear-gradient(to right, red, red)",
+                            width: "250px",
+                            fontSize: "16px"
+                        },
+                        onClick: function () { } // Callback after click
+                    }).showToast();
+                }
+            })
+
+        })
+	</script>
+
+<script>
+	let updateId
+    $("#exampleModalUpdate").on('show.bs.modal', function (event) {
+        const button = $(event.relatedTarget) 
+       updateId = button.data("id")
+       let trElement = $(`tr[data-id=${updateId}]`);
+		$("#update-firstName").val(trElement.find("td:eq(1)").text())
+		$("#update-lastName").val(trElement.find("td:eq(2)").text())
+		$("#update-email").val(trElement.find("td:eq(3)").text())
+    })
+    $(".btn-update").click(e => {
+        e.preventDefault();
+        
+        let Tenvattu = $("#update-firstName").val();
+        let Loaivattu = $("#update-lastName").val();
+        let email = $("#update-email").val();
+
+        // Tạo đối tượng dữ liệu để gửi lên API
+        let data = {
+        		Tenvattu: Tenvattu,
+        		Loaivattu: Loaivattu,
+        		email: email,
+        };
+        
+        $.ajax({
+                url:`api/user/update?id=${updateId}` ,
+                type: "POST",
+                data: data,
+                success: (response) => {
+                    Toastify({
+                        text: "Cập nhật tài khoản thành công",
+                        duration: 2000,
+                        newWindow: true,
+                        //close: true,
+                        offset: {
+                            x: 50, // horizontal axis - can be a number or a string indicating unity. eg: '2em'
+                            y: 10 // vertical axis - can be a number or a string indicating unity. eg: '2em'
+                        },
+                        gravity: "top", // `top` or `bottom`
+                        position: "right", // `left`, `center` or `right`
+                        stopOnFocus: true, // Prevents dismissing of toast on hover
+                        style: {
+                            background: "linear-gradient(to right, green, green)",
+                            width: "250px",
+                            fontSize: "16px"
+                        },
+                    }).showToast();
+                    setTimeout(() => {
+                        $("#exampleModalUpdate").modal("hide");
+                        location.reload();
+                    }, "2000")
+                },
+                error: (data) => {
+                    Toastify({
+                        text: "Lỗi server",
+                        duration: 2000,
+                        newWindow: true,
+                        //close: true,
+                        offset: {
+                            x: 50, // horizontal axis - can be a number or a string indicating unity. eg: '2em'
+                            y: 10 // vertical axis - can be a number or a string indicating unity. eg: '2em'
+                        },
+                        gravity: "top", // `top` or `bottom`
+                        position: "right", // `left`, `center` or `right`
+                        stopOnFocus: true, // Prevents dismissing of toast on hover
+                        style: {
+                            background: "linear-gradient(to right, red, red)",
+                            width: "250px",
+                            fontSize: "16px"
+                        },
+                        onClick: function () { } // Callback after click
+                    }).showToast();
+                }
+            })
+
+        })
+	</script>
+
+
+</html>
